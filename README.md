@@ -1,7 +1,7 @@
 <h1 align="center">CoVisIT: Cross-Modal Prior Guided Diffusion Model for Visible-to-Infrared Image Translation</h1>
 
 <p align="center">
-  <a href="https://linfeng-tang.github.io/">Linfeng Tang</a>, Hu Tong, Zizhuo Li, Hao Zhang, Han Xu, Zhenfeng Shao, <a href="https://jiayi-ma.github.io/">Jiayi Ma</a>
+  <a href="https://linfeng-tang.github.io/">Linfeng Tang</a>, Tong Hu, Zizhuo Li, Hao Zhang, Han Xu, Zhenfeng Shao, <a href="https://jiayi-ma.github.io/">Jiayi Ma</a>
 </p>
 
 <p align="center"><strong>NeurIPS 2026 · Accepted</strong></p>
@@ -98,7 +98,7 @@ If this work is useful for your research, please consider citing:
 ```bibtex
 @inproceedings{Tang2026CoVisIT,
   title={CoVisIT: Cross-Modal Prior Guided Diffusion Model for Visible-to-Infrared Image Translation},
-  author={Tang, Linfeng and Tong, Hu and Li, Zizhuo and Zhang, Hao and Xu, Han and Shao, Zhenfeng and Ma, Jiayi},
+  author={Tang, Linfeng and Hu, Tong and Li, Zizhuo and Zhang, Hao and Xu, Han and Shao, Zhenfeng and Ma, Jiayi},
   booktitle={Advances in Neural Information Processing Systems (NeurIPS)},
   year={2026},
   note={Accepted}
