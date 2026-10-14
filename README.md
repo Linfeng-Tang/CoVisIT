@@ -13,7 +13,7 @@
 
 <p align="center"><strong>High-resolution infrared generation with visible detail priors and low-resolution infrared thermal cues.</strong></p>
 
-> This is the official project repository for CoVisIT. It contains the project overview, paper figures, source code, environment requirements, and training and testing instructions. Pretrained CoVisIT checkpoints and a public paper link are not yet available.
+> This is the official project repository for CoVisIT. It contains the project overview, paper figures, source code, environment requirements, and training and testing instructions. Pretrained CoVisIT checkpoints are available on Baidu Netdisk; a public paper link is not yet available.
 
 ## ✨ News
 
@@ -165,8 +165,8 @@ pip install -r without_text/requirements.txt
 
 | Model | Download | Directory |
 | --- | --- | --- |
-| CoVisIT (with text guidance) | Coming soon | `with_text/checkpoints/` |
-| CoVisIT (without text guidance) | Coming soon | `without_text/checkpoints/` |
+| CoVisIT (with text guidance) | [Baidu Netdisk](https://pan.baidu.com/s/1O8LASlZP2yk-HJUE9yl_pQ?pwd=h24t) (code: `h24t`) | `with_text/checkpoints/` |
+| CoVisIT (without text guidance) | [Baidu Netdisk](https://pan.baidu.com/s/1O8LASlZP2yk-HJUE9yl_pQ?pwd=h24t) (code: `h24t`) | `without_text/checkpoints/` |
 | Long-CLIP-L | [Long-CLIP](https://github.com/beichenzbc/Long-CLIP) | `with_text/models/LongCLIP/checkpoints/` |
 
 Download the Long-CLIP-L pretrained weight `longclip-L.pt` from the [Long-CLIP repository](https://github.com/beichenzbc/Long-CLIP) and place it at the path specified by `model.longclip_model` in `with_text/configs/config.yml`.
@@ -331,10 +331,10 @@ test_results/
 - [x] Project overview and figures
 - [ ] Public paper link
 - [x] Source code and environment requirements
-- [ ] Pretrained models
+- [x] Pretrained models
 - [x] Training, inference, and evaluation instructions
 
-Source code and installation, training, inference, and evaluation instructions are available in this repository. Pretrained CoVisIT checkpoint download links will be added when available.
+Source code and installation, training, inference, and evaluation instructions are available in this repository. Pretrained CoVisIT checkpoints for both versions are available through the Baidu Netdisk link above.
 
 ## 🎓 Citation
 
