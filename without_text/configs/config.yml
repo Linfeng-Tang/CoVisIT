@@ -1,0 +1,51 @@
+data:
+    dataset: 'Dege'
+    trainpath: 'data/train'
+    testpath: 'data/test'
+    valpath: 'data/val'
+    train_raw_dir: 'visible'
+    train_gt_dir: 'infrared_gt'
+    train_guide_dir: 'infrared_input'
+    val_raw_dir: 'visible'
+    val_gt_dir: 'infrared_gt'
+    val_guide_dir: 'infrared_input'
+    test_raw_dir: 'visible'
+    test_gt_dir: 'infrared_gt'
+    test_guide_dir: 'infrared_input'
+    conditional: True
+    num_workers: 8
+
+model:
+    ae_model: 'pretrained/ae.pth'
+    in_channels: 8
+    out_ch: 8
+    ch: 128
+    ch_mult: [1, 1, 2, 2, 4, 4]
+    num_res_blocks: 2
+    dropout: 0.2
+    ema_rate: 0.999
+    ema: True
+    resamp_with_conv: True
+
+diffusion:
+    beta_schedule: linear
+    beta_start: 0.00085 
+    beta_end: 0.0120 
+    num_diffusion_timesteps: 1000
+
+training:
+    batch_size: 2
+    n_epochs: 18000
+    n_iters: 1000000
+    snapshot_freq: 50000
+    path: 'checkpoints'
+    log_dir: 'runs'
+    val_save_dir: 'validation/images'
+    eval_freq: 4500
+
+optim:
+    weight_decay: 0.000
+    optimizer: "Adam"
+    lr: 0.000015
+    amsgrad: False
+    eps: 0.00000001

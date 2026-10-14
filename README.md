@@ -8,12 +8,12 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/NeurIPS-2026-684B9B?style=flat-square" alt="NeurIPS 2026">
-  <img src="https://img.shields.io/badge/Code-Not_yet_released-E6A23C?style=flat-square" alt="Code not yet released">
+  <img src="https://img.shields.io/badge/Code-Released-2EA44F?style=flat-square" alt="Code released">
 </p>
 
 <p align="center"><strong>High-resolution infrared generation with visible detail priors and low-resolution infrared thermal cues.</strong></p>
 
-> This is the official project repository for CoVisIT. It currently contains the project overview and paper figures. Source code, pretrained models, and a public paper link are not yet available; this repository is not yet runnable.
+> This is the official project repository for CoVisIT. It contains the project overview, paper figures, source code, environment requirements, and training and testing instructions. Pretrained CoVisIT checkpoints and a public paper link are not yet available.
 
 ## ✨ News
 
@@ -80,15 +80,261 @@ Selected downstream results reported in the paper are shown below. **HR GT** is 
 
 **Limitations.** The evaluation uses simulated low-resolution and misaligned infrared inputs; real sensor degradations can be more complex. Diffusion sampling is also slower than feed-forward generation.
 
+## 🗂️ Repository Structure
+
+The repository provides the full model with text guidance in `with_text/` and the model without text guidance in `without_text/`. Both versions contain their own configurations, training and testing scripts, and dependency lists.
+
+```text
+CoVisIT/
+├── README.md
+├── assets/
+│   ├── motivation.png
+│   ├── framework.png
+│   ├── basic.png
+│   ├── fusion.png
+│   ├── segment.png
+│   └── yolo.png
+├── with_text/
+│   ├── configs/
+│   ├── models/
+│   ├── pretrained/
+│   ├── utils/
+│   ├── dataset.py
+│   ├── dataset_test.py
+│   ├── train.py
+│   ├── test.py
+│   └── requirements.txt
+└── without_text/
+    ├── configs/
+    ├── models/
+    ├── pretrained/
+    ├── utils/
+    ├── dataset.py
+    ├── dataset_test.py
+    ├── train.py
+    ├── test.py
+    └── requirements.txt
+```
+
+## 🛠️ Create Environment
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/YOUR_USERNAME/CoVisIT.git
+cd CoVisIT
+```
+
+### 2. Create a Conda environment
+
+```bash
+conda create -n covisit python=3.9 -y
+conda activate covisit
+```
+
+The experiments use the following software versions:
+
+| Component | Version |
+| --- | --- |
+| Python | 3.9.0 |
+| PyTorch | 2.8.0 |
+| Torchvision | 0.23.0 |
+| CUDA (PyTorch) | 12.8 |
+| cuDNN | 9.10.2 |
+
+### 3. Install dependencies
+
+```bash
+pip install torch==2.8.0 torchvision==0.23.0 \
+  --index-url https://download.pytorch.org/whl/cu128
+```
+
+For the full model with text guidance:
+
+```bash
+pip install -r with_text/requirements.txt
+```
+
+For the model without text guidance:
+
+```bash
+pip install -r without_text/requirements.txt
+```
+
+## 📥 Pre-trained Weights
+
+| Model | Download | Directory |
+| --- | --- | --- |
+| CoVisIT (with text guidance) | Coming soon | `with_text/checkpoints/` |
+| CoVisIT (without text guidance) | Coming soon | `without_text/checkpoints/` |
+| Long-CLIP-L | [Long-CLIP](https://github.com/beichenzbc/Long-CLIP) | `with_text/models/LongCLIP/checkpoints/` |
+
+Download the Long-CLIP-L pretrained weight `longclip-L.pt` from the [Long-CLIP repository](https://github.com/beichenzbc/Long-CLIP) and place it at the path specified by `model.longclip_model` in `with_text/configs/config.yml`.
+
+The Autoencoder weights are located at `pretrained/ae.pth` within each version's directory.
+
+```text
+CoVisIT/
+├── with_text/
+│   ├── pretrained/
+│   │   └── ae.pth
+│   ├── models/
+│   │   └── LongCLIP/
+│   │       └── checkpoints/
+│   │           └── longclip-L.pt
+│   └── checkpoints/
+│       └── covisit.pth
+└── without_text/
+    ├── pretrained/
+    │   └── ae.pth
+    └── checkpoints/
+        └── covisit_notext.pth
+```
+
+## 🗂️ Dataset Preparation
+
+Each sample contains a visible image, a high-resolution infrared ground-truth image, and a low-resolution or degraded infrared guidance image. Corresponding images should have matching filenames.
+
+### 1. Dataset organization
+
+```text
+/path/to/dataset/
+├── train/
+│   ├── visible/
+│   ├── infrared_gt/
+│   └── infrared_input/
+├── val/
+│   ├── visible/
+│   ├── infrared_gt/
+│   └── infrared_input/
+├── test/
+│   ├── visible/
+│   ├── infrared_gt/
+│   └── infrared_input/
+└── text/
+    ├── train.jsonl
+    ├── val.jsonl
+    └── test.jsonl
+```
+
+### 2. Configure the dataset directories
+
+Set the dataset paths and folder names in `with_text/configs/config.yml` or `without_text/configs/config.yml`:
+
+```yaml
+data:
+  trainpath: '/path/to/dataset/train'
+  valpath: '/path/to/dataset/val'
+  testpath: '/path/to/dataset/test'
+
+  train_raw_dir: 'visible'
+  train_gt_dir: 'infrared_gt'
+  train_guide_dir: 'infrared_input'
+
+  val_raw_dir: 'visible'
+  val_gt_dir: 'infrared_gt'
+  val_guide_dir: 'infrared_input'
+
+  test_raw_dir: 'visible'
+  test_gt_dir: 'infrared_gt'
+  test_guide_dir: 'infrared_input'
+```
+
+### 3. Text annotations (with_text only)
+
+The full model uses scene descriptions stored in JSON or JSONL files. For example:
+
+```json
+{"filename": "000001.png", "text": "A street with several parked vehicles."}
+```
+
+Specify the text annotation paths in `with_text/configs/config.yml`:
+
+```yaml
+data:
+  train_text_json: '/path/to/dataset/text/train.jsonl'
+  val_text_json: '/path/to/dataset/text/val.jsonl'
+  test_text_json: '/path/to/dataset/text/test.jsonl'
+```
+
+The `without_text` version does not require text annotations.
+
+## 🔥 Training
+
+Configure dataset paths, pretrained weights, and training settings in the relevant `configs/config.yml` before training.
+
+### 1. With Text Guidance
+
+From the repository root:
+
+```bash
+cd with_text
+CUDA_VISIBLE_DEVICES=0 python train.py --config configs/config.yml
+```
+
+For multi-GPU training:
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1 python train.py --config configs/config.yml
+```
+
+### 2. Without Text Guidance
+
+From the repository root:
+
+```bash
+cd without_text
+CUDA_VISIBLE_DEVICES=0 python train.py --config configs/config.yml
+```
+
+## 🧪 Testing
+
+Test dataset paths and folder names are loaded from the `data.testpath`, `data.test_raw_dir`, `data.test_gt_dir`, and `data.test_guide_dir` settings in the corresponding YAML file. The text-guided model also reads `data.test_text_json`.
+
+### 1. With Text Guidance
+
+From the repository root:
+
+```bash
+cd with_text
+CUDA_VISIBLE_DEVICES=0 python test.py \
+  --config configs/config.yml \
+  --ckpt_path checkpoints/covisit.pth \
+  --sampling_timesteps 50 \
+  --batch_size 1 \
+  --save_dir test_results
+```
+
+### 2. Without Text Guidance
+
+From the repository root:
+
+```bash
+cd without_text
+CUDA_VISIBLE_DEVICES=0 python test.py \
+  --config configs/config.yml \
+  --ckpt_path checkpoints/covisit_notext.pth \
+  --sampling_timesteps 50 \
+  --batch_size 1 \
+  --save_dir test_results
+```
+
+```text
+test_results/
+├── generated_images/
+│   └── rank0/
+└── metrics.txt
+```
+
 ## 📦 Release Status
 
 - [x] Project overview and figures
 - [ ] Public paper link
-- [ ] Source code and environment requirements
+- [x] Source code and environment requirements
 - [ ] Pretrained models
-- [ ] Training, inference, and evaluation instructions
+- [x] Training, inference, and evaluation instructions
 
-The release timing has not been announced. Installation commands and model download links will be added when the implementation is released.
+Source code and installation, training, inference, and evaluation instructions are available in this repository. Pretrained CoVisIT checkpoint download links will be added when available.
 
 ## 🎓 Citation
 
