@@ -80,40 +80,25 @@ Selected downstream results reported in the paper are shown below. **HR GT** is 
 
 **Limitations.** The evaluation uses simulated low-resolution and misaligned infrared inputs; real sensor degradations can be more complex. Diffusion sampling is also slower than feed-forward generation.
 
-## 🗂️ Repository Structure
+## 🗂️ Versions and Repository Structure
 
-The repository provides the full model with text guidance in `with_text/` and the model without text guidance in `without_text/`. Both versions contain their own configurations, training and testing scripts, and dependency lists.
+**Default full model with text guidance** — this branch contains the runnable model at the repository root.
+
+- [`main`](https://github.com/Linfeng-Tang/CoVisIT/tree/main): full model with text guidance (default).
+- [`without-text`](https://github.com/Linfeng-Tang/CoVisIT/tree/without-text): model without text guidance; no text annotations or Long-CLIP weights required.
 
 ```text
 CoVisIT/
-├── README.md
 ├── assets/
-│   ├── motivation.png
-│   ├── framework.png
-│   ├── basic.png
-│   ├── fusion.png
-│   ├── segment.png
-│   └── yolo.png
-├── with_text/
-│   ├── configs/
-│   ├── models/
-│   ├── pretrained/
-│   ├── utils/
-│   ├── dataset.py
-│   ├── dataset_test.py
-│   ├── train.py
-│   ├── test.py
-│   └── requirements.txt
-└── without_text/
-    ├── configs/
-    ├── models/
-    ├── pretrained/
-    ├── utils/
-    ├── dataset.py
-    ├── dataset_test.py
-    ├── train.py
-    ├── test.py
-    └── requirements.txt
+├── configs/
+├── models/
+├── pretrained/
+├── utils/
+├── dataset.py
+├── dataset_test.py
+├── train.py
+├── test.py
+└── requirements.txt
 ```
 
 ## 🛠️ Create Environment
@@ -121,7 +106,7 @@ CoVisIT/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/CoVisIT.git
+git clone https://github.com/Linfeng-Tang/CoVisIT.git
 cd CoVisIT
 ```
 
@@ -149,47 +134,15 @@ pip install torch==2.8.0 torchvision==0.23.0 \
   --index-url https://download.pytorch.org/whl/cu128
 ```
 
-For the full model with text guidance:
-
 ```bash
-pip install -r with_text/requirements.txt
-```
-
-For the model without text guidance:
-
-```bash
-pip install -r without_text/requirements.txt
+pip install -r requirements.txt
 ```
 
 ## 📥 Pre-trained Weights
 
-| Model | Download | Directory |
-| --- | --- | --- |
-| CoVisIT (with text guidance) | [Baidu Netdisk](https://pan.baidu.com/s/1O8LASlZP2yk-HJUE9yl_pQ?pwd=h24t) (code: `h24t`) | `with_text/checkpoints/` |
-| CoVisIT (without text guidance) | [Baidu Netdisk](https://pan.baidu.com/s/1O8LASlZP2yk-HJUE9yl_pQ?pwd=h24t) (code: `h24t`) | `without_text/checkpoints/` |
-| Long-CLIP-L | [Long-CLIP](https://github.com/beichenzbc/Long-CLIP) | `with_text/models/LongCLIP/checkpoints/` |
+Download the matching CoVisIT checkpoint from [Baidu Netdisk](https://pan.baidu.com/s/1O8LASlZP2yk-HJUE9yl_pQ?pwd=h24t) (code: `h24t`) into `checkpoints/`. Place autoencoder weights at `pretrained/ae.pth`.
 
-Download the Long-CLIP-L pretrained weight `longclip-L.pt` from the [Long-CLIP repository](https://github.com/beichenzbc/Long-CLIP) and place it at the path specified by `model.longclip_model` in `with_text/configs/config.yml`.
-
-The Autoencoder weights are located at `pretrained/ae.pth` within each version's directory.
-
-```text
-CoVisIT/
-├── with_text/
-│   ├── pretrained/
-│   │   └── ae.pth
-│   ├── models/
-│   │   └── LongCLIP/
-│   │       └── checkpoints/
-│   │           └── longclip-L.pt
-│   └── checkpoints/
-│       └── covisit.pth
-└── without_text/
-    ├── pretrained/
-    │   └── ae.pth
-    └── checkpoints/
-        └── covisit_notext.pth
-```
+Download `longclip-L.pt` from [Long-CLIP](https://github.com/beichenzbc/Long-CLIP) into `models/LongCLIP/checkpoints/` and configure `model.longclip_model` in `configs/config.yml`.
 
 ## 🗂️ Dataset Preparation
 
@@ -219,7 +172,7 @@ Each sample contains a visible image, a high-resolution infrared ground-truth im
 
 ### 2. Configure the dataset directories
 
-Set the dataset paths and folder names in `with_text/configs/config.yml` or `without_text/configs/config.yml`:
+Set the dataset paths and folder names in `configs/config.yml`:
 
 ```yaml
 data:
@@ -240,7 +193,7 @@ data:
   test_guide_dir: 'infrared_input'
 ```
 
-### 3. Text annotations (with_text only)
+### 3. Text annotations
 
 The full model uses scene descriptions stored in JSON or JSONL files. For example:
 
@@ -248,7 +201,7 @@ The full model uses scene descriptions stored in JSON or JSONL files. For exampl
 {"filename": "000001.png", "text": "A street with several parked vehicles."}
 ```
 
-Specify the text annotation paths in `with_text/configs/config.yml`:
+Specify the text annotation paths in `configs/config.yml`:
 
 ```yaml
 data:
@@ -257,18 +210,17 @@ data:
   test_text_json: '/path/to/dataset/text/test.jsonl'
 ```
 
-The `without_text` version does not require text annotations.
+The alternative `without-text` branch does not require text annotations.
 
 ## 🔥 Training
 
 Configure dataset paths, pretrained weights, and training settings in the relevant `configs/config.yml` before training.
 
-### 1. With Text Guidance
+
 
 From the repository root:
 
 ```bash
-cd with_text
 CUDA_VISIBLE_DEVICES=0 python train.py --config configs/config.yml
 ```
 
@@ -278,52 +230,21 @@ For multi-GPU training:
 CUDA_VISIBLE_DEVICES=0,1 python train.py --config configs/config.yml
 ```
 
-### 2. Without Text Guidance
-
-From the repository root:
-
-```bash
-cd without_text
-CUDA_VISIBLE_DEVICES=0 python train.py --config configs/config.yml
-```
-
 ## 🧪 Testing
 
 Test dataset paths and folder names are loaded from the `data.testpath`, `data.test_raw_dir`, `data.test_gt_dir`, and `data.test_guide_dir` settings in the corresponding YAML file. The text-guided model also reads `data.test_text_json`.
 
-### 1. With Text Guidance
+
 
 From the repository root:
 
 ```bash
-cd with_text
 CUDA_VISIBLE_DEVICES=0 python test.py \
   --config configs/config.yml \
   --ckpt_path checkpoints/covisit.pth \
   --sampling_timesteps 50 \
   --batch_size 1 \
   --save_dir test_results
-```
-
-### 2. Without Text Guidance
-
-From the repository root:
-
-```bash
-cd without_text
-CUDA_VISIBLE_DEVICES=0 python test.py \
-  --config configs/config.yml \
-  --ckpt_path checkpoints/covisit_notext.pth \
-  --sampling_timesteps 50 \
-  --batch_size 1 \
-  --save_dir test_results
-```
-
-```text
-test_results/
-├── generated_images/
-│   └── rank0/
-└── metrics.txt
 ```
 
 ## 📦 Release Status
