@@ -8,7 +8,9 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/NeurIPS-2026-684B9B?style=flat-square" alt="NeurIPS 2026">
-  <img src="https://img.shields.io/badge/Code-Released-2EA44F?style=flat-square" alt="Code released">
+  <a href="https://github.com/Linfeng-Tang/CoVisIT/tree/without-text">
+    <img src="https://img.shields.io/badge/Code-Released-2EA44F?style=flat-square" alt="Code released">
+  </a>
 </p>
 
 <p align="center"><strong>High-resolution infrared generation with visible detail priors and low-resolution infrared thermal cues.</strong></p>
